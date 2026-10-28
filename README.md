@@ -1,97 +1,159 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# PlannerApp - Ứng dụng Quản lý Kế hoạch Cá nhân
 
-# Getting Started
+Ứng dụng quản lý kế hoạch cá nhân (**PlannerApp**) được xây dựng bằng **React Native CLI** (không sử dụng Expo) với **TypeScript (strict mode)**, giao diện hoàn toàn bằng tiếng Việt, thiết kế hiện đại, mượt mà và tối ưu trải nghiệm người dùng.
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+---
 
-## Step 1: Start Metro
+## 🛠️ Công nghệ sử dụng
+- **React Native CLI**: 0.88.0
+- **TypeScript**: Chế độ `"strict": true` (không dùng `any`, không `@ts-ignore`)
+- **Điều hướng**: `@react-navigation/native`, `@react-navigation/native-stack`
+- **Lưu trữ cục bộ**: `@react-native-async-storage/async-storage`
+- **Giao diện & Tiện ích**:
+  - `react-native-safe-area-context`
+  - `react-native-screens`
+  - Tự vẽ thanh tiến độ bằng `View`, checkbox tự làm bằng `Pressable`
+  - Biểu tượng sử dụng Emoji / ký tự Unicode (không phụ thuộc `react-native-vector-icons`)
+  - Không sử dụng thư viện UI dựng sẵn
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
+---
 
-To start the Metro dev server, run the following command from the root of your React Native project:
+## 📁 Cấu trúc thư mục dự án
 
-```sh
-# Using npm
+```text
+PlannerApp/
+├── App.tsx                      # Component gốc, cấu hình Navigation & Provider
+├── jest.config.js               # Cấu hình kiểm thử Jest
+├── jest.setup.js                # Mock môi trường kiểm thử Jest
+├── tsconfig.json                # Cấu hình TypeScript (strict mode)
+├── __tests__/                   # Bộ kiểm thử tự động
+│   ├── App.test.tsx             # Kiểm thử render component chính
+│   ├── dateUtils.test.ts        # Kiểm thử các hàm xử lý ngày tháng & hạn chót
+│   └── taskLogic.test.ts        # Kiểm thử dữ liệu mẫu, lọc, tìm kiếm, sắp xếp
+└── src/
+    ├── types/
+    │   └── index.ts             # Định nghĩa Type, Interface (Task, Category, Priority,...)
+    ├── theme/
+    │   └── colors.ts            # Bảng màu, spacing, radius, fontSize, shadow dùng chung
+    ├── utils/
+    │   ├── dateUtils.ts         # Tiện ích parse, format, tính hạn chót, kiểm tra quá hạn
+    │   └── storage.ts           # Wrapper lưu & đọc dữ liệu từ AsyncStorage
+    ├── data/
+    │   └── sampleTasks.ts       # 6 công việc mẫu khởi tạo lần đầu (tính ngày động)
+    ├── context/
+    │   └── TaskContext.tsx      # Quản lý State toàn cục & tự động lưu AsyncStorage
+    ├── components/
+    │   ├── AppButton.tsx        # Nút bấm tái sử dụng có trạng thái pressed/disabled
+    │   ├── EmptyState.tsx       # Giao diện khi danh sách rỗng / không tìm thấy
+    │   ├── FilterBar.tsx        # Thanh tìm kiếm, nút lọc trạng thái, nút sắp xếp
+    │   ├── PriorityBadge.tsx    # Nhãn mức độ ưu tiên (Cao / Trung bình / Thấp)
+    │   ├── ProgressBar.tsx      # Thanh tiến độ công việc vẽ bằng View
+    │   └── TaskItem.tsx         # Thẻ công việc kèm checkbox & xác nhận xoá
+    └── screens/
+        ├── TaskListScreen.tsx   # Màn hình danh sách công việc
+        ├── TaskFormScreen.tsx   # Màn hình thêm / sửa công việc
+        └── TaskDetailScreen.tsx # Màn hình chi tiết công việc
+```
+
+---
+
+## 🚀 Hướng dẫn cài đặt & chạy ứng dụng
+
+### 1. Cài đặt thư viện dependencies
+```bash
+npm install
+```
+
+*(Nếu phát triển trên iOS, chạy thêm `cd ios && pod install && cd ..`)*
+
+### 2. Khởi động Metro Bundler
+```bash
 npm start
-
-# OR using Yarn
-yarn start
 ```
 
-## Step 2: Build and run your app
+### 3. Chạy ứng dụng trên Android / iOS
+- **Android**:
+  ```bash
+  npm run android
+  ```
+- **iOS**:
+  ```bash
+  npm run ios
+  ```
 
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
+---
 
-### Android
+## 🧪 Kiểm thử chất lượng (Testing)
 
-```sh
-# Using npm
-npm run android
-
-# OR using Yarn
-yarn android
+### 1. Kiểm tra TypeScript Strict Mode
+Đảm bảo mã nguồn sạch 100%, không có lỗi type:
+```bash
+npx tsc --noEmit
 ```
 
-### iOS
+### 2. Chạy bộ kiểm thử tự động (Jest)
+Kiểm thử toàn bộ logic nghiệp vụ (ngày tháng, hạn chót, lọc, sắp xếp, dữ liệu mẫu, render):
+```bash
+npm test
+```
+*(Kết quả: 3/3 test suites passed, 21/21 tests passed)*
 
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
+---
 
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
+## ✨ Các chức năng chính
 
-```sh
-bundle install
+1. **Màn hình Danh sách**:
+   - Thống kê tiến độ: `"Đã hoàn thành X/Y công việc"` kèm thanh tiến độ trực quan vẽ bằng `View`.
+   - Danh sách công việc dạng Card bo góc, bóng mờ, hiển thị rõ tên, danh mục, hạn hoàn thành và badge mức ưu tiên.
+   - Checkbox tự chế bằng `Pressable` giúp chuyển đổi trạng thái hoàn thành tức thì.
+   - Công việc quá hạn chưa hoàn thành được gắn nhãn đỏ `"Quá hạn"`.
+
+2. **Thêm & Sửa công việc**:
+   - Dùng chung một form linh hoạt, nhận diện chế độ Thêm mới hoặc Sửa.
+   - Chọn Danh mục và Mức ưu tiên nhanh chóng qua hàng nút bấm.
+   - Validate chặt chẽ:
+     - Tên công việc: không được để trống, không vượt quá 50 ký tự.
+     - Hạn chót: định dạng `dd/mm/yyyy`, kiểm tra ngày có thật (chặn ngày không có thật như `31/02/2026`).
+     - Khi thêm mới: hạn chót không được trước ngày hôm nay.
+     - Hiển thị thông báo lỗi và viền đỏ ngay dưới ô nhập khi sai.
+
+3. **Chi tiết công việc**:
+   - Hiển thị đầy đủ thông tin, trạng thái thực hiện, nhãn quá hạn và ghi chú chi tiết.
+   - Nút đổi trạng thái hoàn thành / chưa hoàn thành cập nhật lập tức.
+   - Điều hướng sang màn hình Sửa với dữ liệu cũ được điền sẵn.
+
+4. **Xác nhận Xoá an toàn**:
+   - Nhấn giữ (long press) trên công việc hoặc bấm nút Xoá trong chi tiết sẽ mở hộp thoại `Alert.alert` xác nhận (Huỷ / Xoá).
+   - Nút `"Xoá việc đã xong (X)"` hiển thị số lượng và yêu cầu xác nhận trước khi xoá.
+
+5. **Bộ lọc, Tìm kiếm & Sắp xếp đồng thời**:
+   - Lọc theo 4 trạng thái: **Tất cả**, **Chưa xong**, **Đã xong**, **Quá hạn**.
+   - Tìm kiếm theo tên công việc (không phân biệt hoa thường).
+   - Chuyển đổi chế độ sắp xếp: theo **Hạn chót (gần nhất)** hoặc theo **Mức ưu tiên (Cao → Thấp)**.
+   - Tiến độ trên đầu màn hình luôn được tính trên toàn bộ công việc.
+
+6. **Lưu trữ dữ liệu (AsyncStorage)**:
+   - Tự động lưu mọi thay đổi vào bộ nhớ máy.
+   - Lần đầu chạy khởi tạo 6 công việc mẫu linh hoạt theo ngày hiện tại.
+   - Dữ liệu luôn được lưu giữ nguyên vẹn khi tắt mở lại ứng dụng.
+
+---
+
+## 📦 Hướng dẫn nộp bài (Đóng gói Project)
+
+Khi nén thư mục project để nộp bài, **BẮT BUỘC BỎ** các thư mục sau để giảm dung lượng file nén:
+- ❌ `node_modules/`
+- ❌ `android/build/`
+- ❌ `android/app/build/`
+- ❌ `ios/Pods/`
+
+### Lệnh xoá nhanh các thư mục rác trước khi nén (trên Windows PowerShell):
+```powershell
+# Xoá thư mục build của Android
+Remove-Item -Recurse -Force android/build, android/app/build -ErrorAction SilentlyContinue
+
+# Xoá thư mục node_modules (nếu cần nén nhẹ nhất)
+Remove-Item -Recurse -Force node_modules -ErrorAction SilentlyContinue
 ```
 
-Then, and every time you update your native dependencies, run:
-
-```sh
-bundle exec pod install
-```
-
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
-
-```sh
-# Using npm
-npm run ios
-
-# OR using Yarn
-yarn ios
-```
-
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
-
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
-
-## Step 3: Modify your app
-
-Now that you have successfully run the app, let's make changes!
-
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
-
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
-
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
-
-## Congratulations! :tada:
-
-You've successfully run and modified your React Native App. :partying_face:
-
-### Now what?
-
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
-
-# Troubleshooting
-
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
-
-# Learn More
-
-To learn more about React Native, take a look at the following resources:
-
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+Sau đó nén toàn bộ thư mục gốc của project thành file `.zip` (ví dụ: `PlannerApp.zip`) và tiến hành nộp bài. Người chấm bài chỉ cần giải nén và chạy `npm install` là có thể chạy ứng dụng ngay lập tức.
