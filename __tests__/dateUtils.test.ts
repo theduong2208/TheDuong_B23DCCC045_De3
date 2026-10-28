@@ -5,6 +5,7 @@ import {
   daysLeft,
   isOverdue,
   getDueText,
+  removeVietnameseTones,
 } from '../src/utils/dateUtils';
 import type { Task } from '../src/types';
 
@@ -117,4 +118,14 @@ describe('Kiểm tra dateUtils', () => {
       expect(getDueText(taskFuture)).toBe('Còn 4 ngày');
     });
   });
+
+  describe('removeVietnameseTones', () => {
+    it('chuyển đổi chuẩn xác tiếng Việt có dấu thành không dấu', () => {
+      expect(removeVietnameseTones('Học tập')).toBe('Hoc tap');
+      expect(removeVietnameseTones('Công việc')).toBe('Cong viec');
+      expect(removeVietnameseTones('Sức khoẻ')).toBe('Suc khoe');
+      expect(removeVietnameseTones('Đăng ký khoá học')).toBe('Dang ky khoa hoc');
+    });
+  });
 });
+

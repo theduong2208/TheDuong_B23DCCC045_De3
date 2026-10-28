@@ -1,5 +1,5 @@
 import { getSampleTasks } from '../src/data/sampleTasks';
-import { parseDate, isOverdue } from '../src/utils/dateUtils';
+import { parseDate, isOverdue, removeVietnameseTones } from '../src/utils/dateUtils';
 import type { Task, Priority, FilterStatus, SortMode } from '../src/types';
 
 const PRIORITY_WEIGHT: Record<Priority, number> = {
@@ -89,10 +89,15 @@ describe('Kiểm tra logic Lọc, Tìm kiếm, Sắp xếp (Câu 5)', () => {
       result = result.filter(t => isOverdue(t));
     }
 
-    // 2. Tìm kiếm tên (không phân biệt hoa thường)
+    // 2. Tìm kiếm tên (không phân biệt hoa thường, hỗ trợ gõ không dấu)
     if (searchQuery.trim().length > 0) {
       const q = searchQuery.trim().toLowerCase();
-      result = result.filter(t => t.title.toLowerCase().includes(q));
+      const qNoTone = removeVietnameseTones(q);
+      result = result.filter(t => {
+        const titleLower = t.title.toLowerCase();
+        const titleNoTone = removeVietnameseTones(titleLower);
+        return titleLower.includes(q) || titleNoTone.includes(qNoTone);
+      });
     }
 
     // 3. Sắp xếp
@@ -126,6 +131,20 @@ describe('Kiểm tra logic Lọc, Tìm kiếm, Sắp xếp (Câu 5)', () => {
     const res = filterAndSort(testTasks, 'all', 'react', 'dueDate');
     expect(res.length).toBe(1);
     expect(res[0].title).toContain('React Native');
+  });
+
+  it('tìm kiếm bằng tiếng Việt không dấu ("hoc" tìm được "Học React Native", "bao cao" tìm được "Làm báo cáo")', () => {
+    const resHoc = filterAndSort(testTasks, 'all', 'hoc', 'dueDate');
+    expect(resHoc.length).toBe(1);
+    expect(resHoc[0].id).toBe('1');
+
+    const resBaoCao = filterAndSort(testTasks, 'all', 'bao cao', 'dueDate');
+    expect(resBaoCao.length).toBe(1);
+    expect(resBaoCao[0].id).toBe('2');
+
+    const resChayBo = filterAndSort(testTasks, 'all', 'chay bo', 'dueDate');
+    expect(resChayBo.length).toBe(1);
+    expect(resChayBo[0].id).toBe('3');
   });
 
   it('sắp xếp theo priority đưa mức "Cao" lên đầu', () => {

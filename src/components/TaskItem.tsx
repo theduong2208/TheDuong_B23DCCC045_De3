@@ -48,6 +48,7 @@ export const TaskItem: React.FC<TaskItemProps> = ({
     <Pressable
       onPress={onPress}
       onLongPress={handleLongPress}
+      delayLongPress={350}
       style={({ pressed }) => [
         styles.card,
         task.done && styles.cardDone,
@@ -131,7 +132,7 @@ const styles = StyleSheet.create({
   },
   cardDone: {
     backgroundColor: colors.surfaceSubtle,
-    opacity: 0.65,
+    opacity: 0.55,
     borderColor: colors.border,
   },
   cardPressed: {
@@ -180,6 +181,8 @@ const styles = StyleSheet.create({
   },
   titleDone: {
     textDecorationLine: 'line-through',
+    textDecorationStyle: 'solid',
+    textDecorationColor: colors.textMuted,
     color: colors.textMuted,
   },
   badgeRow: {

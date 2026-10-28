@@ -20,7 +20,7 @@ import { ProgressBar } from '../components/ProgressBar';
 import { FilterBar } from '../components/FilterBar';
 import { EmptyState } from '../components/EmptyState';
 import { AppButton } from '../components/AppButton';
-import { parseDate, isOverdue } from '../utils/dateUtils';
+import { parseDate, isOverdue, removeVietnameseTones } from '../utils/dateUtils';
 import { colors, spacing } from '../theme/colors';
 
 const PRIORITY_WEIGHT: Record<Priority, number> = {
@@ -59,10 +59,15 @@ export const TaskListScreen: React.FC<TaskListScreenProps> = ({
       result = result.filter(t => isOverdue(t));
     }
 
-    // 2. Lọc theo tìm kiếm tên (không phân biệt hoa thường)
+    // 2. Lọc theo tìm kiếm tên (không phân biệt hoa thường, hỗ trợ gõ không dấu lẫn có dấu)
     if (searchQuery.trim().length > 0) {
       const q = searchQuery.trim().toLowerCase();
-      result = result.filter(t => t.title.toLowerCase().includes(q));
+      const qNoTone = removeVietnameseTones(q);
+      result = result.filter(t => {
+        const titleLower = t.title.toLowerCase();
+        const titleNoTone = removeVietnameseTones(titleLower);
+        return titleLower.includes(q) || titleNoTone.includes(qNoTone);
+      });
     }
 
     // 3. Sắp xếp (không mutate mảng gốc)
@@ -91,7 +96,7 @@ export const TaskListScreen: React.FC<TaskListScreenProps> = ({
 
     Alert.alert(
       'Xác nhận xoá',
-      `Bạn có chắc chắn muốn xoá ${completedCount} việc đã hoàn thành?`,
+      `Bạn có chắc chắn muốn xoá ${completedCount} việc đã hoàn thành không?`,
       [
         { text: 'Huỷ', style: 'cancel' },
         {
@@ -134,7 +139,11 @@ export const TaskListScreen: React.FC<TaskListScreenProps> = ({
             style={styles.addBtn}
           />
           <AppButton
-            title={`Xoá việc đã xong (${completedCount})`}
+            title={
+              completedCount > 0
+                ? `Xoá việc đã hoàn thành (${completedCount})`
+                : 'Xoá việc đã hoàn thành'
+            }
             onPress={handleDeleteDoneTasks}
             variant="secondary"
             disabled={completedCount === 0}

@@ -92,3 +92,28 @@ export function getDueText(task: Task): string {
   }
   return `Còn ${diff} ngày`;
 }
+
+/**
+ * Loại bỏ dấu tiếng Việt để tìm kiếm không dấu chuẩn xác
+ */
+export function removeVietnameseTones(str: string): string {
+  let s = str;
+  s = s.replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g, 'a');
+  s = s.replace(/À|Á|Ạ|Ả|Ã|Â|Ầ|Ấ|Ậ|Ẩ|Ẫ|Ă|Ằ|Ắ|Ặ|Ẳ|Ẵ/g, 'A');
+  s = s.replace(/è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ/g, 'e');
+  s = s.replace(/È|É|Ẹ|Ẻ|Ẽ|Ê|Ề|Ế|Ệ|Ể|Ễ/g, 'E');
+  s = s.replace(/ì|í|ị|ỉ|ĩ/g, 'i');
+  s = s.replace(/Ì|Í|Ị|Ỉ|Ĩ/g, 'I');
+  s = s.replace(/ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ/g, 'o');
+  s = s.replace(/Ò|Ó|Ọ|Ỏ|Õ|Ô|Ồ|Ố|Ộ|Ổ|Ỗ|Ơ|Ờ|Ớ|Ợ|Ở|Ỡ/g, 'O');
+  s = s.replace(/ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ/g, 'u');
+  s = s.replace(/Ù|Ú|Ụ|Ủ|Ũ|Ư|Ừ|Ứ|Ự|Ử|Ữ/g, 'U');
+  s = s.replace(/ỳ|ý|ỵ|ỷ|ỹ/g, 'y');
+  s = s.replace(/Ỳ|Ý|Ỵ|Ỷ|Ỹ/g, 'Y');
+  s = s.replace(/đ/g, 'd');
+  s = s.replace(/Đ/g, 'D');
+  // Kết hợp NFD để lọc hết dấu thanh phụ nếu có
+  s = s.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  return s;
+}
+
