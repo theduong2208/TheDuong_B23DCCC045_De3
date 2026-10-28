@@ -71,3 +71,8 @@ ios/Pods/
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
+
+android/
+ios/
+.bundle/
+Gemfile
